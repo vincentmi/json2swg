@@ -43,7 +43,7 @@ function _json2swg($varName,$varValue,$level)
 		$swagInners = explode("\n" , trim($swagInner));
 		array_pop($swagInners);
 		array_shift($swagInners);
-		$swag .= implode("\n",$swagInners);
+		$swag .= implode("\n",$swagInners)."\n";
 		
 		$swag .= $prefix.")\n";
 		$swag .= $prefix."),\n";
