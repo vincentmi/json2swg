@@ -1,0 +1,119 @@
+<html>
+<Head>
+	<title>Json2Swag</title>
+	<link rel="stylesheet" href="https://cdn.bootcss.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+	<script src="https://cdn.bootcss.com/jquery/3.2.1/jquery.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+	
+</head>
+<body>
+
+<nav class="navbar  navbar-dark bg-primary">
+  <span class="navbar-brand mb-0 h1">Json2swg</span>
+  <span class="navbar-text">
+    @vincent
+  </span>
+</nav>
+
+<div class="container-fluid" style="margin-top:10px;">
+  <div class="row">
+    <div class="col-sm">
+      <textarea id=data style="height:500px;width:100%;"></textarea>
+    </div>
+    <div class="col-sm">
+      <div id="result"  style="padding:10px;OVERFLOW-Y: auto; OVERFLOW-X:hidden;width:100%;height:500;background:#eee;padding:5px">
+      </div>
+    </div>
+</div>
+</div>
+
+<script>
+
+function json2swag(data)
+{
+	let swg = ""
++"* @SWG\Response(\n"
++"*     response=\"200\",\n"
++"*     description=\"接口响应\",\n"
++"*     @SWG\Schema(\n";
+	if(typeof data == "object")
+	{
+		Object.keys(data).forEach(function(key){
+				swg += _json2swg(key , data[key] , 2)
+		});
+	}
+	swg +="*     )\n* )\n";
+	return swg;
+}
+
+function str_repeat(str , repeat)
+{
+	let result = ''
+	let i=0
+	for ( i = 0 ; i < repeat ;i++)
+	{
+		result += str
+	}
+	return result;
+}
+
+function _json2swg(varName , varValue , level )
+{
+	let swg = "";
+	var prefix = "";
+	if ( typeof varValue == "object")
+	{
+		if(Array.isArray(varValue))
+		{
+			prefix = '*'+str_repeat("    ", level);
+			swg += prefix+'@SWG\Property( property="'+varName+'" ,type="array",'+"\n";
+			swg += prefix+'@SWG\Items(type="object",'+"\n";
+			firstElement = varValue.pop()
+			let swagInner= _json2swg('',firstElement,level);
+			let swagInners = swagInner.trim().split("\n");
+			swagInners.pop()
+			swagInners.shift();
+			swg += swagInners.join("\n")+"\n";
+			
+			swg += prefix + ")\n";
+			swg += prefix + "),\n"; 
+		}
+		else
+		{
+			prefix = "*"+ str_repeat("    ",level)
+			swg += prefix + "@SWG\Property( property=\""+varName+"\" ,type=\"object\","+"\n";
+			Object.keys(varValue).forEach(function(key){
+				swg += _json2swg(key , varValue[key] , level+1)
+			});
+			swg += prefix + "),\n"
+		}
+	}else{
+		let varT = typeof varValue;
+		if(varT == "number"){
+			varT = "integer"
+		}
+		swg += '*'+str_repeat("    ", level) +'@SWG\Property( property="'+varName+'" , type="'+varT+'" , example="'+varValue+'",description="'
+		+varName+' 描述"),'+"\n";
+	}
+	return swg
+}
+
+
+	$(
+		function(){
+			$("#data").change(
+				function(){
+					let json = JSON.parse($("#data").val())
+					let result = json2swag(json)
+					result = result.replace(/\n/g,"<br/>")
+					result = result.replace(/ /g,"&nbsp")
+
+					console.log(result)
+					$("#result").html(result)
+				}
+			)
+		}
+	)
+	</script>
+</body>
+
+	</html>
