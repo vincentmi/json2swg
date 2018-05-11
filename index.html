@@ -3,6 +3,12 @@
 	<title>Json2Swag</title>
 	<link rel="stylesheet" href="https://cdn.bootcss.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
 	<script src="https://cdn.bootcss.com/jquery/3.2.1/jquery.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+	<style>
+	
+	.err textarea{
+		background: red;
+	}
+</style>
 	
 </head>
 <body>
@@ -16,7 +22,7 @@
 
 <div class="container-fluid" style="margin-top:10px;">
   <div class="row">
-    <div class="col-sm">
+    <div class="col-sm" id="datawarp">
       <textarea id=data style="height:500px;width:100%;"></textarea>
     </div>
     <div class="col-sm">
@@ -30,19 +36,26 @@
 
 function json2swag(data)
 {
-	let swg = ""
-+"* @SWG\Response(\n"
-+"*     response=\"200\",\n"
-+"*     description=\"接口响应\",\n"
-+"*     @SWG\Schema(\n";
+	let swg = "/**\n"
++"* @SWG\\Get( \n"
++"*    tags={\"模块名称\"},\n"
++"*    path=\"/\",\n"
++"*    summary=\"功能描述\",\n"
+
++"*    @SWG\\Parameter(name=\"page\", type=\"integer\", required=false, in=\"query\",description=\"页码\"),\n"
+
++"*    @SWG\\Response(\n"
++"*         response=\"200\",\n"
++"*         description=\"接口响应\",\n"
++"*         @SWG\\Schema(\n";
 	if(typeof data == "object")
 	{
 		Object.keys(data).forEach(function(key){
-				swg += _json2swg(key , data[key] , 2)
+				swg += _json2swg(key , data[key] , 3)
 		});
 	}
 	swg +="*     )\n* )\n";
-	return swg;
+	return swg+"* )\n**/\n";
 }
 
 function str_repeat(str , repeat)
@@ -66,8 +79,13 @@ function _json2swg(varName , varValue , level )
 		{
 			prefix = '*'+str_repeat("    ", level);
 			swg += prefix+'@SWG\\Property( property="'+varName+'" ,type="array",'+"\n";
-			swg += prefix+'@SWG\\Items(type="object",'+"\n";
+			
 			firstElement = varValue.pop()
+			if(Array.isArray(firstElement)){
+				swg += prefix+'@SWG\\Items(type="array",'+"\n";
+			}else{
+				swg += prefix+'@SWG\\Items(type="object",'+"\n";
+			}
 			let swagInner= _json2swg('',firstElement,level);
 			let swagInners = swagInner.trim().split("\n");
 			swagInners.pop()
@@ -102,12 +120,16 @@ function _json2swg(varName , varValue , level )
 		function(){
 			$("#data").keyup(
 				function(){
-					let json = JSON.parse($("#data").val())
 					try{
+						let json = JSON.parse($("#data").val())
+					
 						let result = json2swag(json)
 						$("#result").html(result)
+						$("#datawarp").removeClass('err')
 					}catch(e){
 						console.log(e)
+			
+						$("#datawarp").addClass('err')
 					}
 					//result = result.replace(/\n/g,"<br/>")
 					//result = result.replace(/ /g,"&nbsp")
