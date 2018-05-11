@@ -20,8 +20,8 @@
       <textarea id=data style="height:500px;width:100%;"></textarea>
     </div>
     <div class="col-sm">
-      <div id="result"  style="padding:10px;OVERFLOW-Y: auto; OVERFLOW-X:hidden;width:100%;height:500;background:#eee;padding:5px">
-      </div>
+      <textarea id="result"  style="padding:10px;OVERFLOW-Y: auto; OVERFLOW-X:hidden;width:100%;height:500;background:#eee;padding:5px">
+      </textarea>
     </div>
 </div>
 </div>
@@ -100,15 +100,20 @@ function _json2swg(varName , varValue , level )
 
 	$(
 		function(){
-			$("#data").change(
+			$("#data").keyup(
 				function(){
 					let json = JSON.parse($("#data").val())
-					let result = json2swag(json)
-					result = result.replace(/\n/g,"<br/>")
-					result = result.replace(/ /g,"&nbsp")
+					try{
+						let result = json2swag(json)
+						$("#result").html(result)
+					}catch(e){
+						console.log(e)
+					}
+					//result = result.replace(/\n/g,"<br/>")
+					//result = result.replace(/ /g,"&nbsp")
 
-					console.log(result)
-					$("#result").html(result)
+					//console.log(result)
+					
 				}
 			)
 		}
