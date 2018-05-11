@@ -4,6 +4,14 @@
 
 ## 使用
 
+### 1. 线上的JS版本 ###
+[https://vincentmi.github.io/json2swg/](https://vincentmi.github.io/json2swg/)
+
+>
+> JS版本可以直接线上操作
+>
+
+### 2 . 本地运行
 ```sh 
 ./start.sh
 ```
