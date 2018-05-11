@@ -65,8 +65,8 @@ function _json2swg(varName , varValue , level )
 		if(Array.isArray(varValue))
 		{
 			prefix = '*'+str_repeat("    ", level);
-			swg += prefix+'@SWG\Property( property="'+varName+'" ,type="array",'+"\n";
-			swg += prefix+'@SWG\Items(type="object",'+"\n";
+			swg += prefix+'@SWG\\Property( property="'+varName+'" ,type="array",'+"\n";
+			swg += prefix+'@SWG\\Items(type="object",'+"\n";
 			firstElement = varValue.pop()
 			let swagInner= _json2swg('',firstElement,level);
 			let swagInners = swagInner.trim().split("\n");
@@ -80,7 +80,7 @@ function _json2swg(varName , varValue , level )
 		else
 		{
 			prefix = "*"+ str_repeat("    ",level)
-			swg += prefix + "@SWG\Property( property=\""+varName+"\" ,type=\"object\","+"\n";
+			swg += prefix + "@SWG\\Property( property=\""+varName+"\" ,type=\"object\","+"\n";
 			Object.keys(varValue).forEach(function(key){
 				swg += _json2swg(key , varValue[key] , level+1)
 			});
@@ -91,7 +91,7 @@ function _json2swg(varName , varValue , level )
 		if(varT == "number"){
 			varT = "integer"
 		}
-		swg += '*'+str_repeat("    ", level) +'@SWG\Property( property="'+varName+'" , type="'+varT+'" , example="'+varValue+'",description="'
+		swg += '*'+str_repeat("    ", level) +'@SWG\\Property( property="'+varName+'" , type="'+varT+'" , example="'+varValue+'",description="'
 		+varName+' 描述"),'+"\n";
 	}
 	return swg
