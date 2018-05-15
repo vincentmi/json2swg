@@ -73,7 +73,14 @@ function _json2swg(varName , varValue , level )
 {
 	let swg = "";
 	var prefix = "";
-	if ( typeof varValue == "object")
+	if(varValue == null)
+	{
+		varValue = ""	
+	}
+
+	let varType = typeof varValue
+
+	if ( varType == "object")
 	{
 		if(Array.isArray(varValue))
 		{
@@ -83,14 +90,15 @@ function _json2swg(varName , varValue , level )
 			firstElement = varValue.pop()
 			if(Array.isArray(firstElement)){
 				swg += prefix+'@SWG\\Items(type="array",'+"\n";
+				let swagInner= _json2swg('',firstElement,level);
+				let swagInners = swagInner.trim().split("\n");
+				swagInners.pop()
+				swagInners.shift();
+				swg += swagInners.join("\n")+"\n";
 			}else{
-				swg += prefix+'@SWG\\Items(type="object",'+"\n";
+				swg += prefix+'@SWG\\Items(type="'+(typeof firstElement)+'",'+"\n";
 			}
-			let swagInner= _json2swg('',firstElement,level);
-			let swagInners = swagInner.trim().split("\n");
-			swagInners.pop()
-			swagInners.shift();
-			swg += swagInners.join("\n")+"\n";
+			
 			
 			swg += prefix + ")\n";
 			swg += prefix + "),\n"; 
@@ -121,7 +129,9 @@ function _json2swg(varName , varValue , level )
 			$("#data").keyup(
 				function(){
 					try{
-						let json = JSON.parse($("#data").val())
+						let data = $("#data").val()
+						//data = data.replace(/\snull\s/,"null")
+						let json = JSON.parse(data)
 					
 						let result = json2swag(json)
 						$("#result").html(result)
