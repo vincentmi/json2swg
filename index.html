@@ -58,6 +58,8 @@ function json2swag(data)
 	return swg+"* )\n**/\n";
 }
 
+var TAB_STRING = "    "
+
 function str_repeat(str , repeat)
 {
 	let result = ''
@@ -69,7 +71,22 @@ function str_repeat(str , repeat)
 	return result;
 }
 
-function _json2swg(varName , varValue , level ,fromArray )
+function _typestr(v)
+{
+	let varT = typeof v 
+	if( varT == "object" && Array.isArray(v)){
+		return "array"
+	}else if(varT == "object")
+	{
+		return "object"
+	}else if(varT == "number"){
+		return "integer"
+	}else{
+		return varT 
+	}
+}
+
+function _json2swg(varName , varValue , level )
 {
 	let swg = "";
 	var prefix = "";
@@ -78,67 +95,45 @@ function _json2swg(varName , varValue , level ,fromArray )
 		varValue = ""	
 	}
 
-	let varType = typeof varValue
+	let varType = _typestr(varValue)
 
-	prefix1 = '*'+str_repeat("    ", level);
+	let prefix1 = '*'+str_repeat(TAB_STRING, level);
 
-	if ( varType == "object" && Array.isArray(varValue)){
+	if ( varType == "array"){
 
-			firstElement = varValue.pop()
+		if(varName == "")
+		{
+			swg += prefix1 + "@SWG\\Property( type=\"array\","+"\n";
+		}else{
+			swg += prefix1 + "@SWG\\Property( property=\""+varName+"\" ,type=\"array\","+"\n";
+		}
 
-			
-			swg += prefix1+'@SWG\\Items(type="array",'+"\n";
+		firstElement = varValue.pop()
+		firstElementType = _typestr(firstElement)
+		let prefix2 = '*'+str_repeat(TAB_STRING, level+1);
+		swg += prefix2+'@SWG\\Items(type="'+firstElementType+'",'+"\n";
+		swg += _json2swg("",firstElement,level+2,true)
+		swg += prefix2 +"),\n"
 
-			swg += _json2swg("",firstElement,level+1,true)
-
-			swg += prefix1 +"),\n"
-			/*
-			swg += prefix+'@SWG\\Items(type="array",'+"\n";
-			
-			firstElement = varValue.pop()
-			if(Array.isArray(firstElement)){
-				
-				let swagInner= _json2swg('',firstElement,level);
-				let swagInners = swagInner.trim().split("\n");
-				swagInners.pop()
-				swagInners.shift();
-				swg += swagInners.join("\n")+"\n";
-			}else if(typeof firstElement == "object" ){
-				prefix = "*"+ str_repeat("    ",level+1)
-				swg += prefix+'@SWG\\Items(type="'+(typeof firstElement)+'",'+"\n";
-				Object.keys(firstElement).forEach(function(key){
-					swg += _json2swg(key , firstElement[key] , level+2)
-				});
-				swg += prefix + "),\n"
-			}else{
-				prefix = "*"+ str_repeat("    ",level)
-				swg += prefix+'@SWG\\Items(type="'+(typeof firstElement)+'",'+"\n";
-			}
-			swg += prefix + ")\n";
-			swg += prefix1 + "),\n"; */
 	}else if(varType == "object"){
-		if(fromArray)
+		if(varName == "")
 		{
 			swg += prefix1 + "@SWG\\Property( type=\"object\","+"\n";
 		}else{
 			swg += prefix1 + "@SWG\\Property( property=\""+varName+"\" ,type=\"object\","+"\n";
 		}
-			swg += prefix1 + "@SWG\\Property( property=\""+varName+"\" ,type=\"object\","+"\n";
-			Object.keys(varValue).forEach(function(key){
-				swg += _json2swg(key , varValue[key] , level+1 )
-			});
-			swg += prefix1 + "),\n"
+		Object.keys(varValue).forEach(function(key){
+			swg += _json2swg(key , varValue[key] , level+1 )
+		});
+		swg += prefix1 + "),\n"
 		
 	}else{
-		let varT = typeof varValue;
-		if(varT == "number"){
-			varT = "integer"
-		}
-		if(fromArray)
+		
+		if(varName == "")
 		{
-			swg += prefix1 +'@SWG\\Property( type="'+varT+'" , example="'+varValue+'",description="'+varName+' 描述"),'+"\n";
+			swg += prefix1 +'@SWG\\Property( type="'+varType+'" , example="'+varValue+'",description="'+varName+' 描述"),'+"\n";
 		}else{
-			swg += prefix1 +'@SWG\\Property( property="'+varName+'" , type="'+varT+'" , example="'+varValue+'",description="'+varName+' 描述"),'+"\n";
+			swg += prefix1 +'@SWG\\Property( property="'+varName+'" , type="'+varType+'" , example="'+varValue+'",description="'+varName+' 描述"),'+"\n";
 		}
 		
 	}
