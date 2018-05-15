@@ -36,6 +36,26 @@
 
 var TAB_STRING = "    "
 
+var DESC_MAP ={
+	"id" : "ID流水号" ,
+	"created_at":"创建时间",
+	"updated_at" : "更新时间",
+	"deleted_at" : "删除时间",
+	"sort_order" : "显示顺序",
+	"order_num" : "显示顺序",
+	"email" : "邮件地址",
+	"phone" :"手机号",
+	"cellphone":"手机号",
+	"status" : "状态",
+	"amount":"数量",
+	"name":"姓名",
+	"title":"标题",
+	"description":"描述",
+	"memo":"备注",
+	"remark":"备注"
+}
+
+
 function json2swag(data)
 {
 	let swg = "/**\n"
@@ -134,14 +154,20 @@ function _json2swg(varName , varValue , level )
 		swg += prefix1 + "),\n"
 		
 	}else{
+
+		if(typeof DESC_MAP[varName] != "undefined" )
+		{
+			varDesc = DESC_MAP[varName]
+		}else{
+			varDesc = "填写描述"
+		}
 		
 		if(varName == "")
 		{
-			swg += prefix1 +'@SWG\\Property( type="'+varType+'" , example="'+varValue+'",description="'+varName+' 描述"),'+"\n";
+			swg += prefix1 +'@SWG\\Property( type="'+varType+'" , example="'+varValue+'",description="'+varDesc+'"),'+"\n";
 		}else{
-			swg += prefix1 +'@SWG\\Property( property="'+varName+'" , type="'+varType+'" , example="'+varValue+'",description="'+varName+' 描述"),'+"\n";
+			swg += prefix1 +'@SWG\\Property( property="'+varName+'" , type="'+varType+'" , example="'+varValue+'",description="'+varDesc+'"),'+"\n";
 		}
-		
 	}
 	return swg
 }
