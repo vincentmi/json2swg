@@ -34,6 +34,8 @@
 
 <script>
 
+var TAB_STRING = "    "
+
 function json2swag(data)
 {
 	let swg = "/**\n"
@@ -54,11 +56,14 @@ function json2swag(data)
 				swg += _json2swg(key , data[key] , 3 ,false)
 		});
 	}
-	swg +="*     )\n* )\n";
-	return swg+"* )\n**/\n";
+	swg +="*         )\n";
+	swg +="*    )\n";
+	swg +="* )\n"
+	swg +="**/\n"
+	return swg;
 }
 
-var TAB_STRING = "    "
+
 
 function str_repeat(str , repeat)
 {
@@ -114,6 +119,7 @@ function _json2swg(varName , varValue , level )
 		swg += prefix2+'@SWG\\Items(type="'+firstElementType+'",'+"\n";
 		swg += _json2swg("",firstElement,level+2,true)
 		swg += prefix2 +"),\n"
+		swg += prefix1 +"),\n"
 
 	}else if(varType == "object"){
 		if(varName == "")
