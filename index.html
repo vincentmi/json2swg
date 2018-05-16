@@ -144,14 +144,18 @@ function _json2swg(varName , varValue , level )
 	}else if(varType == "object"){
 		if(varName == "")
 		{
-			swg += prefix1 + "@SWG\\Property( type=\"object\","+"\n";
+			//swg += prefix1 + "@SWG\\Property( type=\"object\","+"\n";
 		}else{
 			swg += prefix1 + "@SWG\\Property( property=\""+varName+"\" ,type=\"object\","+"\n";
 		}
 		Object.keys(varValue).forEach(function(key){
 			swg += _json2swg(key , varValue[key] , level+1 )
 		});
-		swg += prefix1 + "),\n"
+		if(varName == "")
+		{
+		}else{
+			swg += prefix1 + "),\n"
+		}
 		
 	}else{
 
