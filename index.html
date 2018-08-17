@@ -80,7 +80,7 @@ function _json2swg(varName , varValue , level )
 		else
 		{
 			prefix = "*"+ str_repeat("    ",level)
-			swg += prefix + "@SWG\Property( property=\""+varName+"\" ,type=\"object\","+"\n";
+			swg += prefix + "@SWG\Property( property=\""+varName+"\" ,type=\"object\",description=\"\""+"\n";
 			Object.keys(varValue).forEach(function(key){
 				swg += _json2swg(key , varValue[key] , level+1)
 			});
